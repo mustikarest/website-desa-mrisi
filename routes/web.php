@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use App\Http\Controllers\ProfilDesaController;
 use App\Http\Controllers\DusunController;
 use App\Http\Controllers\PetaController;
@@ -15,8 +16,18 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('admin.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/admin', function () {
+    return redirect('/admin/index');
+})->middleware(['auth', 'verified']);
+
+Route::get('/admin/{page}', function ($page) {
+    $view = 'admin.' . $page;
+    abort_unless(View::exists($view), 404);
+    return view($view);
+})->where('page', '[A-Za-z0-9\-]+')->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
